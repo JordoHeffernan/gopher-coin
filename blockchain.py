@@ -4,15 +4,28 @@ from time import time
 from urllib.parse import urlparse
 from uuid import uuid4
 
+from collections import OrderedDict
+import binascii
+
+import Crypto
+import Crypto.Random
+from Crypto.Hash import SHA
+from Crypto.PublicKey import RSA
+from Crypto.Signature import PKCS1_v1_5
+
 import requests
 from flask import Flask, jsonify, request
+from flask_cors import CORS
+
+MINING_SENDER = 'GOPHER COIN'
 
 
-class Blockchain(object):
+class Blockchain:
     def __init__(self):
-        self.current_transactions = []
+        self.transactions = []
         self.chain = []
         self.nodes = set()
+        self.node_id = node_identifier
         # Genesis block
         self.new_block(proof=100, previous_hash='1')
 
@@ -21,11 +34,11 @@ class Blockchain(object):
         block = {
             'index': len(self.chain) + 1,
             'timestamp': time(),
-            'transactions': self.current_transactions,
+            'transactions': self.transactions,
             'proof': proof,
             'previous_hash': previous_hash or self.hash(self.chain[-1])
         }
-        self.current_transactions = []
+        self.transactions = []
         self.chain.append(block)
         return block
 
@@ -39,18 +52,18 @@ class Blockchain(object):
     def proof_of_work(self, last_block):
         last_proof = last_block['proof']
         last_hash = self.hash(last_block)
-
         proof = 0
-        while self.valid_proof(last_proof, proof, last_hash) is False:
+        while self.valid_proof(last_proof, last_hash, proof) is False:
             proof += 1
 
         return proof
 
     # validate proof against last accepted proof
     @staticmethod
-    def valid_proof(last_proof, proof, last_hash):
-        guess = f'{last_proof}{proof}{last_hash}'.encode()
+    def valid_proof(last_proof, last_hash, proof):
+        guess = f'{last_proof}{last_hash}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
+        print(guess_hash)
         return guess_hash[:4] == '0000'
 
     # Check to see if given blockchain is valid
@@ -62,12 +75,14 @@ class Blockchain(object):
             print(f'{last_block}')
             print(f'{block}')
             print('\n-----------\n')
-            last_block_hash = self.hash(last_block)
-
-            if block['previous_hash'] != last_block_hash:
+            last_hash = self.hash(last_block)
+            if block['previous_hash'] != last_hash:
                 return False
 
-            if not self.valid_proof(last_block['proof'], block['proof'], last_block_hash):
+            proof = block['proof']
+            last_proof = last_block['proof']
+            if not self.valid_proof(last_proof, last_hash, proof):
+                print('valid proof fail')
                 return False
             last_block = block
             current_index += 1
@@ -81,12 +96,11 @@ class Blockchain(object):
         max_length = len(self.chain)
 
         for node in neighbors:
-            response = requests.get(f'http://{node}/chain')
-
+            # print('http://' + node + '/chain')
+            response = requests.get('http://' + node + '/chain')
             if response.status_code == 200:
                 length = response.json()['length']
                 chain = response.json()['chain']
-
                 if length > max_length and self.valid_chain(chain):
                     max_length = length
                     new_chain = chain
@@ -108,14 +122,28 @@ class Blockchain(object):
             raise ValueError('Invalid URL')
 
     # Allow people to send blocks
-    def new_transaction(self, sender, recipient, amount):
-        self.current_transactions.append({
-            'sender': sender,
-            'recipient': recipient,
-            'amount': amount
-        })
+    def new_transaction(self, sender, recipient, amount, signature):
+        transaction = OrderedDict({'sender': sender,
+                                   'recipient': recipient,
+                                   'amount': amount})
+        if sender == MINING_SENDER:
+            self.transactions.append(transaction)
+            return len(self.chain) + 1
+        else:
+            transaction_verification = self.verify_transaction_signature(
+                sender, signature, transaction)
+            if transaction_verification:
+                self.transactions.append(transaction)
+                return len(self.chain) + 1
+            else:
+                return False
 
-        return self.last_block['index'] + 1
+    # Check that signature matches that of transaction
+    def verify_transaction_signature(self, sender, signature, transaction):
+        public_key = RSA.importKey(binascii.unhexify(sender))
+        verifier = PKCS1_v1_5.new(public_key)
+        h = SHA.new(str(transaction).encode('utf8'))
+        return verifier.verify(h, binascii.unhexlify(signature))
 
     @property
     def last_block(self):
@@ -124,6 +152,7 @@ class Blockchain(object):
 
 # Instantiate the Node
 app = Flask(__name__)
+CORS(app)
 
 # Create unique address for this node
 node_identifier = str(uuid4()).replace('-', '')
@@ -132,6 +161,11 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
 
 # -------- ROUTES --------- #
+
+
+# @app.route('/')
+# def index():
+#     return render_template('./index.html')
 
 # Get ma chain, yo!
 @app.route('/chain', methods=['GET'])
@@ -145,14 +179,15 @@ def full_chain():
 # mine for new blocks
 @app.route('/mine', methods=['GET'])
 def mine():
-    last_block = blockchain.last_block
+    last_block = blockchain.chain[-1]
     proof = blockchain.proof_of_work(last_block)
 
     # use transaction to send miner new block from server(sender: 0)
     blockchain.new_transaction(
-        sender="0",
-        recipient=node_identifier,
-        amount=1
+        sender=MINING_SENDER,
+        recipient=blockchain.node_id,
+        amount=1,
+        signature=''
     )
 
     # add new block to the chain
@@ -170,7 +205,7 @@ def mine():
 
 
 # register new nodes that have been mined
-@app.route('/node/register', methods=['POST'])
+@app.route('/nodes/register', methods=['POST'])
 def register_nodes():
     values = request.get_json()
     nodes = values.get('nodes')
@@ -187,21 +222,34 @@ def register_nodes():
     return jsonify(response), 201
 
 # route for creating a new transaction
-@app.route('/transaction/new', methods=['POST'])
+@app.route('/transactions/new', methods=['POST'])
 def new_transaction():
     values = request.get_json()
-    required = ['sender', 'recipient', 'amount']
+    required = ['sender', 'recipient', 'amount', 'signature']
 
     if not all(k in values for k in required):
         return ' Missing values', 400
 
-    index = blockchain.new_transaction(
+    transaction_result = blockchain.new_transaction(
         values['sender'],
         values['recipient'],
-        values['amount'])
+        values['amount'],
+        values['signature'])
 
-    response = {'message': f'Transaction will be added to Block {index}'}
-    return jsonify(response), 201
+    if transaction_result == False:
+        response = {'message': 'Invalid Transaction!'}
+        return jsonify(response), 406
+    else:
+        response = {
+            'message': f'Transaction will be added to Block {transaction_result}'}
+        return jsonify(response), 201
+
+
+@app.route('/transactions/get', methods=['GET'])
+def get_transations():
+    transactions = blockchain.transactions
+    response = {'transactions': transactions}
+    return jsonify(response), 200
 
 # Perform concesus checks for incoming chains to keep up to date
 @app.route('/nodes/resolve', methods=['GET'])
@@ -220,6 +268,13 @@ def consensus():
     return jsonify(response), 200
 
 
+@app.route('/nodes/get', methods=['GET'])
+def get_nodes():
+    nodes = list(blockchain.nodes)
+    response = {'nodes': nodes, }
+    return jsonify(response), 200
+
+
 if __name__ == '__main__':
     from argparse import ArgumentParser
 
@@ -231,4 +286,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     port = args.port
 
-app.run(host='0.0.0.0', port=port)
+app.run(host='127.0.0.1', port=port)
