@@ -1,4 +1,4 @@
-# gopher-coin
+# GopherCoin
 ## A very simple Blockchain
 
 **DISCLAIMER:** This is by no means a production ready blockchain/cryptocurrency and should not be used as such. For now, this is just the basic infrastucture for the server and client backend. This project was built soley as a means of introducing myself to Python as well as gaining a better understanding of how blockchains function. It is in no way operational at this point. But it was super fun to learn and I plan to continue to work on it!
@@ -20,7 +20,7 @@ I would first recomend doing some reading to get a basic grasp of what a blockch
 ### SETUP
   1. clone repo
   2. `cd` into the folder
-  3. From the CLI run `python -m pip install -r requirements.txt` to install necessarry frameworks/libraries
+  3. From the terminal run `python -m pip install -r requirements.txt` to install necessarry frameworks/libraries
   4. To really take full advantage of peeking under the hood of how this or any blockchain works, you'll need to have two nodes accessing the same server. If you haven't done this before, it is fairly straight forward. You just need to run the code from two different ports on your machine, which I've included as an argument when running the file as `-p` or `--port` flag. To do this:
      * Run `python blockchain.py -p 5000` in your terminal. 
      * Then open a new terminal window, navigate to your cloned directory once again, and run `python blockchain.py -p 5001`
@@ -30,22 +30,26 @@ I would first recomend doing some reading to get a basic grasp of what a blockch
   You should now have two seperate nodes up and running on your very own local blockchain! From here you can perform most but not all of your basic functionality. Because I do not have a frontend built yet, for the next steps you're going to need an API development Environment. You can do this from your terminal with cURL if you'd like but for clarity and ease of use I highly reccomend using [Postman](https://www.getpostman.com/). 
 
   First, let's mine a block or two. Setup Postman with the following info:
-    - GET: `http://localhost:5000/mine`
+
+  - GET: `http://localhost:5000/mine`
+
     ![mining step 1](/READme-images/mining0.png)
   
-  You should get a response that looks something like this:
+ **You should get a response that looks something like this:**
+
     ![mining step 2](/READme-images/mining0-response.png)
 
   Mining a block is very similar to a transaction between two people, except that the sender is the blockchain authority/server. Each block will contain data specific to that chain:
-    * It's index in the chain
-    * The hash of the previous block
-    * The proof that it used to solve the blockchain Proof of Work
-    * A list of transactions, including the action of being mined as well as any other transactions that have occured within the blockchain networek since the last block was mined.
+  * It's index in the chain
+  * The hash of the previous block
+  * The proof that it used to solve the blockchain Proof of Work
+  * A list of transactions, including the action of being mined as well as any other transactions that have occured within the blockchain networek since the last block was mined.
 
   Now go over to your other port/node and do some mining over there until its chain is longer than your first chain. I found it easiest to do this in multiple tabs within Postman:
-    - Run the GET: http://localhost:*5001*/mine a few times and see how the hash, index, and hash all change to reflect the growing chain.
-    - If you're curious, check out the `/chain` endpoint to see the full chain: GET: http://localhost:5001/chain
-    ![chain](/READme-images/chain.png)
+  - Run the GET: http://localhost:*5001*/mine a few times and see how the hash, index, and hash all change to reflect the growing chain.
+  - If you're curious, check out the `/chain` endpoint to see the full chain: GET: http://localhost:5001/chain
+
+  ![chain](/READme-images/chain.png)
 
   Now you may start to see the most basic issue with a dispersed network currency. These two seperate nodes are working on the same chain, at the same time and now have differing data. What are we to do?! *Concensus to the rescue!*
     - Hop on over back to your original node `localhost:5000` 
