@@ -95,9 +95,8 @@ I would first recommend doing some reading to get a basic grasp of what a blockc
     * "signature": *provided to you in the response from the system when you generated the transaction*
     * "amount": *matching the amount from the original order*,
     * "recipient": *again, match what you sent in the transaction issued*
-    * "sender": *your public key*
+    * "sender": *your public key*}
   - the system should respond letting you know what block the transaction will be recorded to, feel free to go mine that block to get some more piping hot GopherCoin and see the transaction in the network records!
-  }
 
     ![register transaction](/READme-images/reg-transaction.png)
 
