@@ -55,9 +55,11 @@ I would first recommend doing some reading to get a basic grasp of what a blockc
 
   - Hop on over back to your original node `localhost:5000` 
   - And send a `POST` request to `http://localhost:5000/nodes/register` with the following info in the body as JSON:
-  ```{
+  ```
+  {
 	    "nodes": ["http://127.0.0.1:5001"]
-  }```
+  }
+  ```
     
 ![register](/READme-images/register.png)
     
