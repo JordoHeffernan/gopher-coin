@@ -5,6 +5,12 @@
 
 I followed this incredibly well detailed guide by Adil Moujahid: [A Practical Introduction to Blockchain with Python](http://adilmoujahid.com/posts/2018/03/intro-blockchain-bitcoin-python/) and was helped along the way with the aid of Chris Angelico who you can find here: https://github.com/Rosuav
 
+My big takeaways from the first week of building this:
+- Do LOTS research *before* starting a side project. This project will take up your time, be sure the process is something you're intested in, not just the topic.
+- Remember the console is your friend. Don't guess if you don't know what your problem is. Debug with intent.
+- If you're stuck on something for an 45 minutes that is just seomething you want, but don't need. Leave it for another day and get back to what matters.
+- Keep your original goal in mind. Is the task your working on going to help you meet that goal? Is the side project as a whole going to help you meet that goal? If not, it's ok to start over.
+
 **TO-DOs:**
  - [ ] Build web portal
  - [ ] Identify Miners by wallet rather than node.id so they are properly rewarded
