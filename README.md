@@ -91,12 +91,13 @@ I would first recommend doing some reading to get a basic grasp of what a blockc
   ![transaction response](/READme-images/transaction-response.png)
     
   The last step is to register your transaction with the blockchain network. It will be added to the next block to be mined and when that occurs, the transaction can be verified via the signature and will process.
-  - back on port:5000 `POST` to `http://localhost:5000/transactions/new` with the following info
+  - back on port:5000 `POST` to `http://localhost:5000/transactions/new` with the following info in the body {
     * "signature": *provided to you in the response from the system when you generated the transaction*
     * "amount": *matching the amount from the original order*,
     * "recipient": *again, match what you sent in the transaction issued*
     * "sender": *your public key*
   - the system should respond letting you know what block the transaction will be recorded to, feel free to go mine that block to get some more piping hot GopherCoin and see the transaction in the network records!
+  }
 
     ![register transaction](/READme-images/reg-transaction.png)
 
