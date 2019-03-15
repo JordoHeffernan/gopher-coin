@@ -46,8 +46,8 @@ I would first recommend doing some reading to get a basic grasp of what a blockc
   * A list of transactions, including the action of being mined as well as any other transactions that have occurred within the blockchain network since the last block was mined.
 
   Now go over to your other port/node and do some mining over there until its chain is longer than your first chain. I found it easiest to do this in multiple tabs within Postman:
-  - Run the GET: http://localhost:*5001*/mine a few times and see how the hash, index, and hash all change to reflect the growing chain.
-  - If you're curious, check out the `/chain` endpoint to see the full chain: GET: http://localhost:5001/chain
+  - Run the `GET: http://localhost:5001/mine` a few times and see how the hash, index, and hash all change to reflect the growing chain.
+  - If you're curious, check out the `/chain` endpoint to see the full chain: `GET: http://localhost:5001/chain`
 
   ![chain](/READme-images/chain.png)
 
@@ -70,18 +70,19 @@ I would first recommend doing some reading to get a basic grasp of what a blockc
 
   For this simple blockchain, our consensus algorithm measures the total size/length of the chain to see which one should reign supreme. Bitcoin however determines 'longest' by which chain ends in the block that has solved the most difficult proof-of-work. This could potentially lead to some overwriting of blocks and often does in a simple blockchain like ours. Bitcoin however only has a new block mined once about every 10 minutes, so the likelihood of people operating on an outdated chain or having their blocks overwritten is slim enough to not be an issue.
 
-  Our last bit of functionality has to do inter-person transactions. That is to say, what if I have some gopher-coins I've mined and would like to buy a good from a retailer that accepts gopher-coin as a currency *please no one do this in real life*. For this you will need to spin up our client side backend:
+  Our last bit of functionality has to do inter-person transactions. That is to say, what if I have some gopher-coins I've mined and would like to buy a good from a retailer that accepts gopher-coin as a currency *please noone do this in real life*. For this you will need to spin up our client side backend:
   - back in the terminal run `python client.py -p 8080`
   - Get a new wallet, which will consist of public and private keys generated as 1024-bit RSA keys. To do this jump back in postman and send a `GET` request to `http://localhost:8080/wallet/new` which should give you a response akin to:
 
   ![wallet](/READme-images/wallet.png)
     
   Your public key also serves as your wallet ID. This is very common practice amongst functioning cryptocurrencies. You should not however, share your private key with anyone or post it online anywhere... ever. This would provide anyone with the ability to decrypt your public key and perform transactions on your account and steal all your precious Gopher Coin! But you will need to provide it when you initiate a transaction. The private key will never be included in any response from the system. Instead, a transaction signature is sent back which you will include when you register the transaction with the server. Let's see what initiating a transaction looks like:
-  - On your client send a `POST` request to `http://localhost:8080/transactions/generate` with the following inputs filled out in the body as JSON:
+  - On your client send a `POST` request to `http://localhost:8080/transactions/generate` with the following inputs filled out in the body as JSON: {
     * "sender": *your public key*
     * "sender-private-key": *your private key*
     * "recipient": *the public key/wallet ID of someone else*
     * "amount": *how many previous GopherCoins are you willing to part with*
+  }
 
     ![generate transaction](/READme-images/gen-transaction.png)
 
