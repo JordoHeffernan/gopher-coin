@@ -3,7 +3,7 @@
 
 **DISCLAIMER:** This is by no means a production ready blockchain/cryptocurrency and should not be used as such. For now, this is just the basic infrastructure for the server and client backend. This project was built solely as a means of introducing myself to Python as well as gaining a better understanding of how blockchains function. It is in no way operational at this point. But it was super fun to learn and I plan to continue to work on it!
 
-I followed this incredibly well detailed guide by Adil Moujahid: [A Practical Introduction to Blockchain with Python](http://adilmoujahid.com/posts/2018/03/intro-blockchain-bitcoin-python/) and was helped along the way with the aid of Chris Angelico who you can find here: (https://github.com/Rosuav)
+I followed this incredibly well detailed guide by Adil Moujahid: [A Practical Introduction to Blockchain with Python](http://adilmoujahid.com/posts/2018/03/intro-blockchain-bitcoin-python/) and was helped along the way with the aid of Chris Angelico who you can find here: https://github.com/Rosuav
 
 **TO-DOs:**
  - [ ] Build web portal
@@ -15,7 +15,7 @@ I followed this incredibly well detailed guide by Adil Moujahid: [A Practical In
 
 ## How to use this code
 
-I would first recommend doing some reading to get a basic grasp of what a blockchain is, especially cryptocurrencies, and how mining works from a high level. I don't have the space here to go too in depth and people with a better understanding than me have written about them extensively. The objective of my work here is to look at how these processes actually happen in code. I found this website to be pretty helpful if you're looking for somewhere to start: (https://www.bitcoinmining.com/). Secondly, I tried to be as detailed as possible in my write-up below, but if you run into any issues or have any questions, please feel free to ask! I'm really looking forward to making a simple front-end for this which should help to make things a little clearer.
+I would first recommend doing some reading to get a basic grasp of what a blockchain is, especially cryptocurrencies, and how mining works from a high level. I don't have the space here to go too in depth and people with a better understanding than me have written about them extensively. The objective of my work here is to look at how these processes actually happen in code. I found this website to be pretty helpful if you're looking for somewhere to start: https://www.bitcoinmining.com/. Secondly, I tried to be as detailed as possible in my write-up below, but if you run into any issues or have any questions, please feel free to ask! I'm really looking forward to making a simple front-end for this which should help to make things a little clearer.
 
 ### SETUP
   1. clone repo
