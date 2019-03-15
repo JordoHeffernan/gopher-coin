@@ -54,7 +54,7 @@ def new_wallet():
     return jsonify(response), 200
 
 # Generate a new transaction given data from sender
-@app.route('transactions/generate', method=['POST'])
+@app.route('/transactions/generate', methods=['POST'])
 def generate_transaction():
 
     sender = request.json['sender']
@@ -74,10 +74,8 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
 
     parser = ArgumentParser()
-    parser.add_argument('-p, --port',
-                        default=8080,
-                        type=int,
-                        help='port to listen on')
+    parser.add_argument('-p', '--port', default=8080,
+                        type=int, help='port to listen on')
     args = parser.parse_args()
     port = args.port
 

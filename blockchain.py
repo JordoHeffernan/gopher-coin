@@ -63,7 +63,6 @@ class Blockchain:
     def valid_proof(last_proof, last_hash, proof):
         guess = f'{last_proof}{last_hash}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
-        print(guess_hash)
         return guess_hash[:4] == '0000'
 
     # Check to see if given blockchain is valid
