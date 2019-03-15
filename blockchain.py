@@ -140,7 +140,7 @@ class Blockchain:
 
     # Check that signature matches that of transaction
     def verify_transaction_signature(self, sender, signature, transaction):
-        public_key = RSA.importKey(binascii.unhexify(sender))
+        public_key = RSA.importKey(binascii.unhexlify(sender))
         verifier = PKCS1_v1_5.new(public_key)
         h = SHA.new(str(transaction).encode('utf8'))
         return verifier.verify(h, binascii.unhexlify(signature))
@@ -186,7 +186,7 @@ def mine():
     blockchain.new_transaction(
         sender=MINING_SENDER,
         recipient=blockchain.node_id,
-        amount=1,
+        amount=20,
         signature=''
     )
 
