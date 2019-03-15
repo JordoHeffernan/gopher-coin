@@ -54,12 +54,7 @@ I would first recommend doing some reading to get a basic grasp of what a blockc
   Now you may start to see the most basic issue with a dispersed network currency. These two separate nodes are working on the same chain, at the same time and now have differing data. What are we to do?! *Consensus to the rescue!*
 
   - Hop on over back to your original node `localhost:5000` 
-  - And send a `POST` request to `http://localhost:5000/nodes/register` with the following info in the body as JSON:
-  ```
-  {
-	    "nodes": ["http://127.0.0.1:5001"]
-  }
-  ```
+  - And send a `POST` request to `http://localhost:5000/nodes/register` with `{"nodes": ["http://127.0.0.1:5001"]}` in the body as JSON:
     
 ![register](/READme-images/register.png)
     
